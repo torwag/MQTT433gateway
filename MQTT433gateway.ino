@@ -35,6 +35,10 @@
 #include <PubSubClient.h>
 #include <ESPiLight.h>
 
+#include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
+#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+
 #include "src/SHAauth/SHAauth.h"
 #include "src/Heartbeat/Heartbeat.h"
 
@@ -46,6 +50,7 @@ const char* mqtt_server = myMQTT_BROCKER;
 #define TRANSMITTER_PIN 4
 
 WiFiClient wifi;
+WiFiManager wifiManager;
 PubSubClient mqtt(wifi);
 Heartbeat beatLED(0);
 ESPiLight rf(TRANSMITTER_PIN);
@@ -59,7 +64,8 @@ String otaURL = "";
 
 void setup() {
   Serial.begin(115200);
-  setup_wifi();
+  //setup_wifi();
+  setup_wifiManager();
   mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(mqttCallback);
   pinMode(RECEIVER_PIN, INPUT_PULLUP); //5V protection with reverse diode needs pullup
@@ -94,6 +100,13 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+}
+
+void setup_wifiManager() {
+  wifiManager.autoConnect(hostName.c_str(),"mqtt433gateway");
+  Serial.println("Entered config mode");
+
+  
 }
 
 void transmitt(const String &protocol, const char *message) {
