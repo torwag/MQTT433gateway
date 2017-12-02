@@ -29,7 +29,7 @@ software. More infomation can be found in their [documentation](http://docs.plat
 
 Then initialize the project:
 ```
-platformio int
+platformio init
 ```
 
 To avoid accidentally uploads of the passwords, the WiFI, MQTT and OTA
